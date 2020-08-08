@@ -93,6 +93,9 @@ void Helper::InitInsertTexts()
 	m_vecMyProjects.push_back(pt);
 
 	sprintf_s(szBuf, Project_Info_Begin, "%s", PI_DataTables_Name, PI_DataTables_Path, PI_DataTables_GUID); nibf(Info);
+	(pt.strInfo += Project_Dep_Begin) += "\n";
+	sprintf_s(szBuf, Tab2_Equal, PI_PublicDef_GUID, PI_PublicDef_GUID); nabf(Info);
+	(pt.strInfo += Project_Dep_End) += "\n";
 	(pt.strInfo += Project_Info_End) += "\n";
 	const ConfigMatrixRow p2Mat[] = {		//HoloLens					Win32						Win64
 	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
