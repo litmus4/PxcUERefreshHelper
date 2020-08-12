@@ -68,6 +68,11 @@ bool Helper::Init()
 	return InitFile();
 }
 
+bool Helper::Run()
+{
+	return false;
+}
+
 void Helper::InitInsertTexts()
 {
 	char szBuf[512];
@@ -111,6 +116,30 @@ void Helper::InitInsertTexts()
 
 bool Helper::InitFile()
 {
+	FILE* pFile = fopen(m_strFilePath.c_str(), "r");
+	if (pFile)
+	{
+		fseek(pFile, 0, SEEK_END);
+		long lSize = ftell(pFile);
+		rewind(pFile);
+		char* pFileBuf = new char[lSize];
+		fread(pFileBuf, 1, lSize, pFile);
+
+		char* pBegin = pFileBuf;
+		char* pEnd = strchr(pFileBuf, '\n');
+		while (pEnd)
+		{
+			std::string strLine;
+			strLine.insert(0, pBegin, pEnd - pBegin);
+			if (!strLine.empty())
+				m_lisLines.push_back(strLine);
+			pBegin = pEnd + 1;
+			pEnd = strchr(pEnd + 1, '\n');
+		}
+
+		delete[] pFileBuf;
+		return !m_lisLines.empty();
+	}
 	return false;
 }
 
@@ -132,5 +161,109 @@ void Helper::FillConfig(ProjectText& pt, char* szBuf, const ConfigMatrixRow* pMa
 				else { nibf(Config); bInit = true; }
 			}
 		}
+	}
+}
+
+bool Helper::InsertUEGameProjectDep()
+{
+	//
+	return false;
+}
+
+std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<LocatingParam>& vecParams)
+{
+	std::list<std::string>::iterator itLine = m_lisLines.begin();
+	std::list<std::string>::reverse_iterator ritLine = m_lisLines.rbegin();
+
+	int iLevel = 0;
+	std::vector<LocatingParam>::const_iterator iter = vecParams.begin();
+	for (; iter != vecParams.end(); iter++)
+	{
+		int iItemIndex = (iter->iItemIndex < 0 ? abs(iter->iItemIndex) - 1 : iter->iItemIndex);
+		int iItemCount = 0;
+		bool bFind = false;
+		if (iter->iItemIndex < 0)
+		{
+			for (; ritLine != m_lisLines.rend(); ritLine++)//FLAGJK 如果Level>0则只搜索到第二个上级Level行前
+			{
+				size_t ipos = ritLine->find_first_not_of('\t');
+				if (ipos != iLevel) continue;
+
+				bool bCheck = false;
+				if (!iter->strItemName.empty())
+				{
+					std::string strCurItemName;
+					size_t ipos2 = ritLine->find_first_of('(', ipos);
+					if (ipos2 != std::string::npos)
+						strCurItemName = ritLine->substr(ipos, ipos2 - ipos);
+					else
+						strCurItemName = ritLine->substr(ipos);
+					if (strCurItemName == "End" + iter->strItemName)
+						bCheck = true;
+				}
+				else
+					bCheck = true;
+
+				if (bCheck)
+				{
+					if (iItemCount == iItemIndex)
+					{
+						bFind = true;
+						break;
+					}
+					iItemCount++;
+				}
+			}
+		}
+		else
+		{
+			for (; itLine != m_lisLines.end(); itLine++)
+			{
+				size_t ipos = itLine->find_first_not_of('\t');
+				if (ipos != iLevel) continue;
+
+				bool bCheck = false;
+				if (!iter->strItemName.empty())
+				{
+					std::string strCurItemName;
+					size_t ipos2 = itLine->find_first_of('(', ipos);
+					if (ipos2 != std::string::npos)
+						strCurItemName = itLine->substr(ipos, ipos2 - ipos);
+					else
+						strCurItemName = itLine->substr(ipos);
+					if (strCurItemName == iter->strItemName)
+						bCheck = true;
+				}
+				else
+					bCheck = true;
+
+				if (bCheck)
+				{
+					if (iItemCount == iItemIndex)
+					{
+						bFind = true;
+						break;
+					}
+					iItemCount++;
+				}
+			}
+		}
+
+		if (bFind)
+		{
+			if (iter->iItemIndex < 0)
+			{
+				itLine = ritLine.base();
+				//FLAGJK 这里要找到itLine对应的开始标记的那行，如果下级搜索是正，则到时候赋值给itLine
+			}
+			else
+			{
+				//FLAGJK 这里先备份一个itLine，然后找到itLine对应的结束标记的下一行，并直接赋值给itLine，如果下级搜索是正，则到时候将备份赋值给itLine
+				ritLine = std::list<std::string>::reverse_iterator(itLine);
+			}
+		}
+		else
+			return m_lisLines.end();
+		iLevel++;
 	}
 }
