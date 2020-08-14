@@ -42,7 +42,7 @@ private:
 
 	bool InsertUEGameProjectDep();
 
-	std::list<std::string>::iterator LocateInsertAfter(const std::vector<LocatingParam>& vecParams);
+	std::list<std::string>::iterator LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal = false);
 
 	std::string m_strFilePath;
 	std::string m_strUEGameProjDep;

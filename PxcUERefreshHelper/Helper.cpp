@@ -170,10 +170,11 @@ bool Helper::InsertUEGameProjectDep()
 	return false;
 }
 
-std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<LocatingParam>& vecParams)
+std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal)
 {
 	std::list<std::string>::iterator itLine = m_lisLines.begin();
 	std::list<std::string>::reverse_iterator ritLine = m_lisLines.rbegin();
+	std::list<std::string>::iterator itBack = m_lisLines.end();
 
 	int iLevel = 0;
 	std::vector<LocatingParam>::const_iterator iter = vecParams.begin();
@@ -184,10 +185,16 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 		bool bFind = false;
 		if (iter->iItemIndex < 0)
 		{
-			for (; ritLine != m_lisLines.rend(); ritLine++)//FLAGJK 如果Level>0则只搜索到第二个上级Level行前
+			for (; ritLine != m_lisLines.rend(); ritLine++)
 			{
 				size_t ipos = ritLine->find_first_not_of('\t');
-				if (ipos != iLevel) continue;
+				switch (iLevel)
+				{
+				case 1: case 2: case 3: case 4:
+					if (ipos < iLevel) break;
+				case 0:
+					if (ipos != iLevel) continue;
+				}
 
 				bool bCheck = false;
 				if (!iter->strItemName.empty())
@@ -217,10 +224,18 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 		}
 		else
 		{
+			if (iLevel > 0) itLine = itBack;
+
 			for (; itLine != m_lisLines.end(); itLine++)
 			{
 				size_t ipos = itLine->find_first_not_of('\t');
-				if (ipos != iLevel) continue;
+				switch (iLevel)
+				{
+				case 1: case 2: case 3: case 4:
+					if (ipos < iLevel) break;
+				case 0:
+					if (ipos != iLevel) continue;
+				}
 
 				bool bCheck = false;
 				if (!iter->strItemName.empty())
@@ -254,11 +269,19 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 			if (iter->iItemIndex < 0)
 			{
 				itLine = ritLine.base();
-				//FLAGJK 这里要找到itLine对应的开始标记的那行，如果下级搜索是正，则到时候赋值给itLine
+				//这里要找到itLine对应的开始标记的那行，如果下级搜索是正，则到时候赋值给itLine
+				(itBack = itLine)--;//FLAGJK ?
+				itBack--;
+				while (itBack->find_first_not_of('\t') > iLevel)
+					itBack--;
 			}
 			else
 			{
-				//FLAGJK 这里先备份一个itLine，然后找到itLine对应的结束标记的下一行，并直接赋值给itLine，如果下级搜索是正，则到时候将备份赋值给itLine
+				//这里先备份一个itLine，然后找到itLine对应的结束标记的下一行，并直接赋值给itLine，如果下级搜索是正，则到时候将备份赋值给itLine
+				itBack = itLine++;
+				while (itLine->find_first_not_of('\t') > iLevel)
+					itLine++;
+				itLine++;
 				ritLine = std::list<std::string>::reverse_iterator(itLine);
 			}
 		}
@@ -266,4 +289,7 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 			return m_lisLines.end();
 		iLevel++;
 	}
+
+	if (bInternal) itLine--;
+	return itLine;
 }
