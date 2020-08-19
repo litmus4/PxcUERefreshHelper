@@ -24,6 +24,7 @@ public:
 	{
 		std::string strItemName;
 		int iItemIndex;
+		std::string strItemKey;
 	};
 
 public:
@@ -43,6 +44,8 @@ private:
 	bool InsertUEGameProjectDep();
 
 	std::list<std::string>::iterator LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal = false);
+	bool FindItemPositively(const LocatingParam& param, std::list<std::string>::iterator& itLine, int iLevel, int* pItemIndex);
+	bool CheckKey(const LocatingParam& param, const std::string& strLine);
 
 	std::string m_strFilePath;
 	std::string m_strUEGameProjDep;

@@ -181,10 +181,10 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 	for (; iter != vecParams.end(); iter++)
 	{
 		int iItemIndex = (iter->iItemIndex < 0 ? abs(iter->iItemIndex) - 1 : iter->iItemIndex);
-		int iItemCount = 0;
 		bool bFind = false;
-		if (iter->iItemIndex < 0)
+		if (iter->iItemIndex < 0 && iter->strItemKey.empty())
 		{
+			int iItemCount = 0;
 			for (; ritLine != m_lisLines.rend(); ritLine++)
 			{
 				size_t ipos = ritLine->find_first_not_of('\t');
@@ -226,42 +226,7 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 		{
 			if (iLevel > 0) itLine = itBack;
 
-			for (; itLine != m_lisLines.end(); itLine++)
-			{
-				size_t ipos = itLine->find_first_not_of('\t');
-				switch (iLevel)
-				{
-				case 1: case 2: case 3: case 4:
-					if (ipos < iLevel) break;
-				case 0:
-					if (ipos != iLevel) continue;
-				}
-
-				bool bCheck = false;
-				if (!iter->strItemName.empty())
-				{
-					std::string strCurItemName;
-					size_t ipos2 = itLine->find_first_of('(', ipos);
-					if (ipos2 != std::string::npos)
-						strCurItemName = itLine->substr(ipos, ipos2 - ipos);
-					else
-						strCurItemName = itLine->substr(ipos);
-					if (strCurItemName == iter->strItemName)
-						bCheck = true;
-				}
-				else
-					bCheck = true;
-
-				if (bCheck)
-				{
-					if (iItemCount == iItemIndex)
-					{
-						bFind = true;
-						break;
-					}
-					iItemCount++;
-				}
-			}
+			bFind = FindItemPositively(*iter, itLine, iLevel, &iItemIndex);
 		}
 
 		if (bFind)
@@ -292,4 +257,92 @@ std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<Loc
 
 	if (bInternal) itLine--;
 	return itLine;
+}
+
+bool Helper::FindItemPositively(const LocatingParam& param, std::list<std::string>::iterator& itLine, int iLevel, int* pItemIndex)
+{
+	int iItemIndex = (pItemIndex ? *pItemIndex : param.iItemIndex);
+	int iItemCount = 0;
+	for (; itLine != m_lisLines.end(); itLine++)
+	{
+		size_t ipos = itLine->find_first_not_of('\t');
+		switch (iLevel)
+		{
+		case 1: case 2: case 3: case 4:
+			if (ipos < iLevel) break;
+		case 0:
+			if (ipos != iLevel) continue;
+		}
+
+		bool bCheck = false;
+		if (!param.strItemName.empty())
+		{
+			std::string strCurItemName;
+			size_t ipos2 = itLine->find_first_of('(', ipos);
+			if (ipos2 != std::string::npos)
+				strCurItemName = itLine->substr(ipos, ipos2 - ipos);
+			else
+				strCurItemName = itLine->substr(ipos);
+			if (strCurItemName == param.strItemName)
+				bCheck = true;
+		}
+		else
+			bCheck = true;
+
+		if (bCheck)
+		{
+			if (param.strItemKey.empty() ? iItemCount == iItemIndex : CheckKey(param, *itLine))
+				return true;
+			iItemCount++;
+		}
+	}
+	return false;
+}
+
+bool Helper::CheckKey(const LocatingParam& param, const std::string& strLine)
+{
+	if (param.strItemName == "Project")
+	{
+		size_t ipos = strLine.find_first_of('=');
+		if (ipos == std::string::npos)
+			return false;
+
+		int iKeyIndex = 0;
+		std::string strKeyLine = strLine.substr(ipos + 1);
+		ipos = strKeyLine.find_first_of('\"');
+		int i = 0;
+		while (ipos != std::string::npos)
+		{
+			size_t ipos2 = strKeyLine.find_first_of('\"', ipos + 1);
+
+			if (i == iKeyIndex)
+			{
+				std::string strCurKey = "";
+				if (ipos2 == std::string::npos)
+					strCurKey = strKeyLine.substr(ipos + 1);
+				else if (ipos2 - ipos > 1)
+					strCurKey = strKeyLine.substr(ipos + 1, ipos2 - ipos - 1);
+				return (strCurKey == param.strItemKey);
+			}
+
+			if (ipos2 == std::string::npos)
+				break;
+			ipos = strKeyLine.find_first_of('\"', ipos2 + 1);
+			i++;
+		}
+	}
+	else
+	{
+		size_t ipos = strLine.find_first_of('=');
+		if (ipos == std::string::npos)
+			return false;
+
+		ipos = strLine.find_first_not_of(' ', ipos + 1);
+		if (ipos != std::string::npos)
+		{
+			std::string strKey = strLine.substr(ipos);
+			return (strKey == param.strItemKey);
+		}
+	}
+	return false;
 }
