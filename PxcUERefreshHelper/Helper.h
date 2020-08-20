@@ -22,6 +22,13 @@ public:
 
 	struct LocatingParam
 	{
+		LocatingParam(const char* szItemName, int iIndex)
+			: strItemName(szItemName), iItemIndex(iIndex)
+		{}
+		LocatingParam(const char* szItemName, const char* szItemKey)
+			: strItemName(szItemName), strItemKey(szItemKey), iItemIndex(0)
+		{}
+
 		std::string strItemName;
 		int iItemIndex;
 		std::string strItemKey;
@@ -41,14 +48,25 @@ private:
 
 	void FillConfig(ProjectText& pt, char* szBuf, const ConfigMatrixRow* pMat, const char* szGuid);
 
-	bool InsertUEGameProjectDep();
+	bool ReadyUEGameProjectDep();
+	bool ReadyProjectInfo();
+	bool ReadyProjectConfig();
+	bool ReadyProjectNested();
 
 	std::list<std::string>::iterator LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal = false);
 	bool FindItemPositively(const LocatingParam& param, std::list<std::string>::iterator& itLine, int iLevel, int* pItemIndex);
 	bool CheckKey(const LocatingParam& param, const std::string& strLine);
+	bool GetStringKeyAfterEqual(const std::string& strLine, int iKeyIndex, std::string& strOutKey);
+	std::string GetItemSubKey(const std::string& strLine);
+	std::string CastOffSkin(const std::string& strIn, int iLayerNum);
 
 	std::string m_strFilePath;
 	std::string m_strUEGameProjDep;
 	std::vector<ProjectText> m_vecMyProjects;
 	std::list<std::string> m_lisLines;
+
+	std::list<std::string>::iterator m_itUEGameProjDepReady;
+	std::list<std::string>::iterator m_itProjInfoReady;
+	std::list<std::string>::iterator m_itProjConfigReady;
+	std::list<std::string>::iterator m_itProjNestedReady;
 };

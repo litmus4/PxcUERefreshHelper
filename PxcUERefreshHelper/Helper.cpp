@@ -164,10 +164,38 @@ void Helper::FillConfig(ProjectText& pt, char* szBuf, const ConfigMatrixRow* pMa
 	}
 }
 
-bool Helper::InsertUEGameProjectDep()
+bool Helper::ReadyUEGameProjectDep()
 {
-	//
-	return false;
+	std::vector<LocatingParam> vecParams;
+	vecParams.push_back(LocatingParam("Project", "UE4Game"));
+	m_itUEGameProjDepReady = LocateInsertAfter(vecParams, true);
+	return (m_itUEGameProjDepReady != m_lisLines.end());
+}
+
+bool Helper::ReadyProjectInfo()
+{
+	std::vector<LocatingParam> vecParams;
+	vecParams.push_back(LocatingParam("Project", -1));
+	m_itProjInfoReady = LocateInsertAfter(vecParams);
+	return (m_itProjInfoReady != m_lisLines.end());
+}
+
+bool Helper::ReadyProjectConfig()
+{
+	std::vector<LocatingParam> vecParams;
+	vecParams.push_back(LocatingParam("Global", 0));
+	vecParams.push_back(LocatingParam("GlobalSection", "ProjectConfigurationPlatforms"));
+	m_itProjConfigReady = LocateInsertAfter(vecParams, true);
+	return (m_itProjConfigReady != m_lisLines.end());
+}
+
+bool Helper::ReadyProjectNested()
+{
+	std::vector<LocatingParam> vecParams;
+	vecParams.push_back(LocatingParam("Global", 0));
+	vecParams.push_back(LocatingParam("GlobalSection", "NestedProjects"));
+	m_itProjNestedReady = LocateInsertAfter(vecParams, true);
+	return (m_itProjNestedReady != m_lisLines.end());
 }
 
 std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal)
@@ -303,33 +331,15 @@ bool Helper::CheckKey(const LocatingParam& param, const std::string& strLine)
 {
 	if (param.strItemName == "Project")
 	{
-		size_t ipos = strLine.find_first_of('=');
-		if (ipos == std::string::npos)
-			return false;
-
-		int iKeyIndex = 0;
-		std::string strKeyLine = strLine.substr(ipos + 1);
-		ipos = strKeyLine.find_first_of('\"');
-		int i = 0;
-		while (ipos != std::string::npos)
-		{
-			size_t ipos2 = strKeyLine.find_first_of('\"', ipos + 1);
-
-			if (i == iKeyIndex)
-			{
-				std::string strCurKey = "";
-				if (ipos2 == std::string::npos)
-					strCurKey = strKeyLine.substr(ipos + 1);
-				else if (ipos2 - ipos > 1)
-					strCurKey = strKeyLine.substr(ipos + 1, ipos2 - ipos - 1);
-				return (strCurKey == param.strItemKey);
-			}
-
-			if (ipos2 == std::string::npos)
-				break;
-			ipos = strKeyLine.find_first_of('\"', ipos2 + 1);
-			i++;
-		}
+		std::string strKey;
+		if (GetStringKeyAfterEqual(strLine, 0, strKey))
+			return (strKey == param.strItemKey);
+	}
+	else if (param.strItemName == "GlobalSection")
+	{
+		std::string&& strKey = GetItemSubKey(strLine);
+		if (!strKey.empty())
+			return (strKey == param.strItemKey);
 	}
 	else
 	{
@@ -345,4 +355,57 @@ bool Helper::CheckKey(const LocatingParam& param, const std::string& strLine)
 		}
 	}
 	return false;
+}
+
+bool Helper::GetStringKeyAfterEqual(const std::string& strLine, int iKeyIndex, std::string& strOutKey)
+{
+	size_t ipos = strLine.find_first_of('=');
+	if (ipos == std::string::npos)
+		return false;
+
+	std::string strKeyLine = strLine.substr(ipos + 1);
+	ipos = strKeyLine.find_first_of('\"');
+	int i = 0;
+	while (ipos != std::string::npos)
+	{
+		size_t ipos2 = strKeyLine.find_first_of('\"', ipos + 1);
+
+		if (i == iKeyIndex)
+		{
+			if (ipos2 == std::string::npos)
+				strOutKey = strKeyLine.substr(ipos + 1);
+			else if (ipos2 - ipos > 1)
+				strOutKey = strKeyLine.substr(ipos + 1, ipos2 - ipos - 1);
+			return true;
+		}
+
+		if (ipos2 == std::string::npos)
+			break;
+		ipos = strKeyLine.find_first_of('\"', ipos2 + 1);
+		i++;
+	}
+	return false;
+}
+
+std::string Helper::GetItemSubKey(const std::string& strLine)
+{
+	size_t ipos = strLine.find_first_of('(');
+	if (ipos == std::string::npos)
+		return "";
+
+	size_t ipos2 = strLine.find_first_of(')', ipos + 1);
+	if (ipos2 == std::string::npos)
+		return "";
+
+	if (ipos2 - ipos > 1)
+		return strLine.substr(ipos + 1, ipos2 - ipos - 1);
+	return "";
+}
+
+std::string Helper::CastOffSkin(const std::string& strIn, int iLayerNum)
+{
+	if (iLayerNum <= 0) return strIn;
+	if (strIn.size() <= iLayerNum * 2)
+		return "";
+	return strIn.substr(iLayerNum, strIn.size() - iLayerNum * 2);
 }
