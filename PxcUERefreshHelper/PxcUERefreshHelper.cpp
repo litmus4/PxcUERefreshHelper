@@ -10,5 +10,20 @@ int main()
     std::cout << "Parsing UE4Game.sln..." << std::endl;
 
     Helper helper;
-    helper.Init();
+    bool bSuccess = false;
+    do
+    {
+        if (!helper.Init())
+            break;
+
+        if (!helper.Run())
+            break;
+
+        bSuccess = true;
+    } while (false);
+
+    if (bSuccess)
+        std::cout << "Success !!!" << std::endl;
+    else
+        std::cout << "Failed !" << std::endl;
 }

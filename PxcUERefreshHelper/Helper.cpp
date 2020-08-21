@@ -70,6 +70,14 @@ bool Helper::Init()
 
 bool Helper::Run()
 {
+	if (ReadyUEGameProjectDep() &&
+		ReadyProjectInfo() &&
+		ReadyProjectConfig() &&
+		ReadyProjectNested())
+	{
+		Insert();
+		return true;
+	}
 	return false;
 }
 
@@ -196,6 +204,43 @@ bool Helper::ReadyProjectNested()
 	vecParams.push_back(LocatingParam("GlobalSection", "NestedProjects"));
 	m_itProjNestedReady = LocateInsertAfter(vecParams, true);
 	return (m_itProjNestedReady != m_lisLines.end());
+}
+
+void Helper::Insert()
+{
+	std::list<std::string>::iterator itIns = m_lisLines.insert(m_itUEGameProjDepReady, m_strUEGameProjDep);
+	m_setInsertedPtrs.insert(&*itIns);
+
+	std::string strGamesFolderGuid;
+	std::list<std::string>::iterator itPctS = m_lisLines.begin();
+	if (FindItemPositively(LocatingParam("Project", "Games"), itPctS, 0))
+	{
+		if (GetStringKeyAfterEqual(*itPctS, 2, strGamesFolderGuid))
+			strGamesFolderGuid = CastOffSkin(strGamesFolderGuid, 1);
+	}
+
+	std::string strVcxProjGuid;
+	if (FindItemPositively(LocatingParam("Project", "UE4Game"), itPctS, 0))
+	{
+		strVcxProjGuid = GetItemSubKey(*itPctS);
+		strVcxProjGuid = CastOffSkin(strVcxProjGuid, 2);
+	}
+
+	char szBuf[2048];
+	auto iter = m_vecMyProjects.begin();
+	for (; iter != m_vecMyProjects.end(); iter++)
+	{
+		sprintf(szBuf, iter->strInfo.c_str(), strVcxProjGuid.c_str());
+		itIns = m_lisLines.insert(m_itProjInfoReady, szBuf);
+		m_setInsertedPtrs.insert(&*itIns);
+
+		itIns = m_lisLines.insert(m_itProjConfigReady, iter->strConfig);
+		m_setInsertedPtrs.insert(&*itIns);
+
+		sprintf(szBuf, iter->strNested.c_str(), strGamesFolderGuid.c_str());
+		itIns = m_lisLines.insert(m_itProjNestedReady, szBuf);
+		m_setInsertedPtrs.insert(&*itIns);
+	}
 }
 
 std::list<std::string>::iterator Helper::LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal)

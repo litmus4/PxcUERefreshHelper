@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <set>
 
 class Helper
 {
@@ -53,8 +54,11 @@ private:
 	bool ReadyProjectConfig();
 	bool ReadyProjectNested();
 
+	void Insert();
+
 	std::list<std::string>::iterator LocateInsertAfter(const std::vector<LocatingParam>& vecParams, bool bInternal = false);
-	bool FindItemPositively(const LocatingParam& param, std::list<std::string>::iterator& itLine, int iLevel, int* pItemIndex);
+	bool FindItemPositively(const LocatingParam& param,
+		std::list<std::string>::iterator& itLine, int iLevel, int* pItemIndex = nullptr);
 	bool CheckKey(const LocatingParam& param, const std::string& strLine);
 	bool GetStringKeyAfterEqual(const std::string& strLine, int iKeyIndex, std::string& strOutKey);
 	std::string GetItemSubKey(const std::string& strLine);
@@ -69,4 +73,5 @@ private:
 	std::list<std::string>::iterator m_itProjInfoReady;
 	std::list<std::string>::iterator m_itProjConfigReady;
 	std::list<std::string>::iterator m_itProjNestedReady;
+	std::set<std::string*> m_setInsertedPtrs;
 };
