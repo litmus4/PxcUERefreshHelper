@@ -42,6 +42,7 @@ public:
 
 	bool Init();
 	bool Run();
+	bool Save();
 
 private:
 	void InitInsertTexts();

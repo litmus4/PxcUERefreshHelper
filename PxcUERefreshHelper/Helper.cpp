@@ -81,6 +81,24 @@ bool Helper::Run()
 	return false;
 }
 
+bool Helper::Save()
+{
+	FILE* pFile = fopen(m_strFilePath.c_str(), "w");
+	if (pFile)
+	{
+		std::list<std::string>::iterator iter = m_lisLines.begin();
+		for (; iter != m_lisLines.end(); iter++)
+		{
+			fwrite(iter->c_str(), 1, iter->size(), pFile);
+			if (m_setInsertedPtrs.find(&*iter) == m_setInsertedPtrs.end())
+				fwrite("\n", 1, 1, pFile);
+		}
+		fclose(pFile);
+		return true;
+	}
+	return false;
+}
+
 void Helper::InitInsertTexts()
 {
 	char szBuf[512];
@@ -146,6 +164,7 @@ bool Helper::InitFile()
 		}
 
 		delete[] pFileBuf;
+		fclose(pFile);
 		return !m_lisLines.empty();
 	}
 	return false;

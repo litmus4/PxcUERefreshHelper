@@ -4,12 +4,18 @@
 #include "Helper.h"
 #include <iostream>
 
-int main()
+int main(int argc, char** argv)
 {
     std::cout << "Pxc UE Sln Refresh Helper" << std::endl;
     std::cout << "Parsing UE4Game.sln..." << std::endl;
 
-    Helper helper;
+    if (argc < 2)
+    {
+        std::cout << "Wrong Args !" << std::endl;
+        return 0;
+    }
+
+    Helper helper(argv[1]);
     bool bSuccess = false;
     do
     {
@@ -19,6 +25,9 @@ int main()
         if (!helper.Run())
             break;
 
+        if (!helper.Save())
+            break;
+
         bSuccess = true;
     } while (false);
 
@@ -26,4 +35,5 @@ int main()
         std::cout << "Success !!!" << std::endl;
     else
         std::cout << "Failed !" << std::endl;
+    return 0;
 }
