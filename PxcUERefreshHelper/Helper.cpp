@@ -15,6 +15,9 @@
 #define PI_DataTables_GUID "C362F347-D4A4-4D3C-892A-25876EA1BB24"
 #define PI_DataTables_Name "DataTables"
 #define PI_DataTables_Path "PxcCore\\DataTables\\DataTables.vcxproj"
+#define PI_MonoControl_GUID "2317EFE8-D649-46D0-A7FB-443606C644D6"
+#define PI_MonoControl_Name "MonoControl"
+#define PI_MonoControl_Path "PxcCore\\MonoControl\\MonoControl.vcxproj"
 
 #define mibf(SUFF) (m_str##SUFF = szBuf) += "\n"
 #define nibf(SUFF) (pt.str##SUFF = szBuf) += "\n"
@@ -105,6 +108,7 @@ void Helper::InitInsertTexts()
 
 	(m_strUEGameProjDep = Project_Dep_Begin) += "\n";
 	sprintf_s(szBuf, Tab2_Equal, PI_DataTables_GUID, PI_DataTables_GUID); mabf(UEGameProjDep);
+	sprintf_s(szBuf, Tab2_Equal, PI_MonoControl_GUID, PI_MonoControl_GUID); mabf(UEGameProjDep);
 	sprintf_s(szBuf, Tab2_Equal, PI_PublicDef_GUID, PI_PublicDef_GUID); mabf(UEGameProjDep);
 	(m_strUEGameProjDep += Project_Dep_End) += "\n";
 
@@ -137,6 +141,22 @@ void Helper::InitInsertTexts()
 	};
 	FillConfig(pt, szBuf, p2Mat, PI_DataTables_GUID);
 	sprintf_s(szBuf, Tab2_Equal, PI_DataTables_GUID, "%s"); nibf(Nested);
+	m_vecMyProjects.push_back(pt);
+
+	sprintf_s(szBuf, Project_Info_Begin, "%s", PI_MonoControl_Name, PI_MonoControl_Path, PI_MonoControl_GUID); nibf(Info);
+	(pt.strInfo += Project_Dep_Begin) += "\n";
+	sprintf_s(szBuf, Tab2_Equal, PI_PublicDef_GUID, PI_PublicDef_GUID); nabf(Info);
+	(pt.strInfo += Project_Dep_End) += "\n";
+	(pt.strInfo += Project_Info_End) += "\n";
+	const ConfigMatrixRow p3Mat[] = {		//HoloLens					Win32						Win64
+	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
+	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
+	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
+	/*Development*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
+	/*Shipping*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64))
+	};
+	FillConfig(pt, szBuf, p3Mat, PI_MonoControl_GUID);
+	sprintf_s(szBuf, Tab2_Equal, PI_MonoControl_GUID, "%s"); nibf(Nested);
 	m_vecMyProjects.push_back(pt);
 }
 
