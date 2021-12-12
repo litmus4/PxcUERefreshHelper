@@ -52,7 +52,7 @@ const char* c_szProjectPlatforms[] = {
 
 Helper::Helper()
 {
-	m_strFilePath = "UE4Game.sln";
+	m_strFilePath = "UEGame.sln";
 }
 
 Helper::Helper(const std::string& strFilePath)
@@ -214,7 +214,7 @@ void Helper::FillConfig(ProjectText& pt, char* szBuf, const ConfigMatrixRow* pMa
 bool Helper::ReadyUEGameProjectDep()
 {
 	std::vector<LocatingParam> vecParams;
-	vecParams.push_back(LocatingParam("Project", "UE4Game"));
+	vecParams.push_back(LocatingParam("Project", "UEGame"));
 	m_itUEGameProjDepReady = LocateInsertAfter(vecParams, true);
 	return (m_itUEGameProjDepReady != m_lisLines.end());
 }
@@ -259,7 +259,7 @@ void Helper::Insert()
 	}
 
 	std::string strVcxProjGuid;
-	if (FindItemPositively(LocatingParam("Project", "UE4Game"), itPctS, 0))
+	if (FindItemPositively(LocatingParam("Project", "UEGame"), itPctS, 0))
 	{
 		strVcxProjGuid = GetItemSubKey(*itPctS);
 		strVcxProjGuid = CastOffSkin(strVcxProjGuid, 2);

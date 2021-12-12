@@ -7,7 +7,7 @@
 int main(int argc, char** argv)
 {
     std::cout << "Pxc UE Sln Refresh Helper" << std::endl;
-    std::cout << "Parsing UE4Game.sln..." << std::endl;
+    std::cout << "Parsing UEGame.sln..." << std::endl;
 
     if (argc < 2)
     {
