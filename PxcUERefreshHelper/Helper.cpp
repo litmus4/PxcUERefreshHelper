@@ -117,8 +117,8 @@ void Helper::InitInsertTexts()
 	sprintf_s(szBuf, Project_Info_Begin, "%s", PI_PublicDef_Name, PI_PublicDef_Path, PI_PublicDef_GUID); nibf(Info);
 	(pt.strInfo += Project_Info_End) += "\n";
 	const ConfigMatrixRow p1Mat[] = {		//HoloLens					Win32						Win64
-	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
-	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
+	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),//TODOJK 暂时全改为Release
+	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Shipping*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64))
@@ -133,8 +133,8 @@ void Helper::InitInsertTexts()
 	(pt.strInfo += Project_Dep_End) += "\n";
 	(pt.strInfo += Project_Info_End) += "\n";
 	const ConfigMatrixRow p2Mat[] = {		//HoloLens					Win32						Win64
-	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
-	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
+	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
+	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Shipping*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64))
@@ -149,8 +149,8 @@ void Helper::InitInsertTexts()
 	(pt.strInfo += Project_Dep_End) += "\n";
 	(pt.strInfo += Project_Info_End) += "\n";
 	const ConfigMatrixRow p3Mat[] = {		//HoloLens					Win32						Win64
-	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
-	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCDebug, PPWin32),		mtxi(PCDebug, PPx64)),
+	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
+	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Shipping*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64))
