@@ -31,7 +31,7 @@ const char* c_szGameConfigs[] = {
 };
 #define GCNum 5
 const char* c_szGamePlatforms[] = {
-	"HoloLens", "Win32", "Win64"
+	"Win64-arm64", "Win64-arm64ec", "Win64"
 };
 #define GPNum 3
 const char* c_szGameSubs[] = {
@@ -116,7 +116,7 @@ void Helper::InitInsertTexts()
 
 	sprintf_s(szBuf, Project_Info_Begin, "%s", PI_PublicDef_Name, PI_PublicDef_Path, PI_PublicDef_GUID); nibf(Info);
 	(pt.strInfo += Project_Info_End) += "\n";
-	const ConfigMatrixRow p1Mat[] = {		//HoloLens					Win32						Win64
+	const ConfigMatrixRow p1Mat[] = {		//Win64-arm64				Win64-arm64ec				Win64
 	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),//TODOJK 暂时全改为Release
 	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
@@ -132,7 +132,7 @@ void Helper::InitInsertTexts()
 	sprintf_s(szBuf, Tab2_Equal, PI_PublicDef_GUID, PI_PublicDef_GUID); nabf(Info);
 	(pt.strInfo += Project_Dep_End) += "\n";
 	(pt.strInfo += Project_Info_End) += "\n";
-	const ConfigMatrixRow p2Mat[] = {		//HoloLens					Win32						Win64
+	const ConfigMatrixRow p2Mat[] = {		//Win64-arm64				Win64-arm64ec				Win64
 	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
@@ -148,7 +148,7 @@ void Helper::InitInsertTexts()
 	sprintf_s(szBuf, Tab2_Equal, PI_PublicDef_GUID, PI_PublicDef_GUID); nabf(Info);
 	(pt.strInfo += Project_Dep_End) += "\n";
 	(pt.strInfo += Project_Info_End) += "\n";
-	const ConfigMatrixRow p3Mat[] = {		//HoloLens					Win32						Win64
+	const ConfigMatrixRow p3Mat[] = {		//Win64-arm64				Win64-arm64ec				Win64
 	/*DebugGame Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*DebugGame*/			ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
 	/*Development Editor*/	ConfigMatrixRow(mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPWin32),	mtxi(PCRelease, PPx64)),
